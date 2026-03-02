@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Root1</title>
+    <style>
+      body{
+        margin: 0px;
+        text-align: center;
+        background-color: black;
+      }
+      div, a{
+        font-size: 1vw;
+      }
+      
+      h1, h4, h6{
+        color: white;
+      }
+      h4{
+        margin: 8px;
+      }
+      h6{
+        margin: 0px;
+      }
+
+      #mainBase{
+        display: flex;
+        flex-direction: row;
+      }
+
+      .link{
+        padding: 4px 12px;
+        background-color: white;
+        border-radius: 2763px;
+      }
+      .aText{
+        margin: 16px;
+        color: white;
+      }
+
+      .aSection{
+        width: 12.5vw;
+        height: 25vw;
+        text-align: center;
+      }
+      .aSection:nth-child(4n-3){
+        background: oklch( 50% 75% 0 );
+      }
+      .aSection:nth-child(4n-2){
+        background: oklch( 50% 75% 90 );
+      }
+      .aSection:nth-child(4n-1){
+        background: oklch( 50% 75% 180 );
+      }
+      .aSection:nth-child(4n){
+        background: oklch( 50% 75% 270 );
+      }
+    </style>
+  </head>
+  <body>
+    <h1>대학교 1학년 웹 프로젝트 모음</h1>
+    <main id="mainBase">
+      <section class="aSection">
+        <div class="aText">개인 유튜브 채널<br>관리 전용 링크트리</div>
+        <a href="https://hyperspace-cf.netlify.app/" target="_blank" class="link">Hyperspace</a>
+        <div class="aText">2025년 4월 2일</div>
+      </section>
+      <section class="aSection">
+        <div class="aText">백준 자바스크립트<br>풀이에 필요한 코드</div>
+        <a href="./Projects/BaseCode.html" target="_blank" class="link">BaseCode</a>
+        <div class="aText">2025년 8월 21일</div>
+      </section>
+      <section class="aSection">
+        <div class="aText">논리 게이트를<br>활용한 미니게임</div>
+        <a href="./Projects/Offon/Offon.html" target="_blank" class="link">Offon</a>
+        <div class="aText">2025년 9월 12일</div>
+      </section>
+      <section class="aSection">
+        <div class="aText">중력 상호작용<br>시뮬레이터</div>
+        <a href="./Projects/gravity.html" target="_blank" class="link">gravity</a>
+        <div class="aText">2025년 9월 15일</div>
+      </section>
+      <section class="aSection">
+        <div class="aText">2D 공 튕기기<br>시뮬레이터</div>
+        <a href="./Projects/JongGang.html" target="_blank" class="link">JongGang</a>
+        <div class="aText">2025년 10월 1일</div>
+      </section>
+      <section class="aSection">
+        <div class="aText">3D 공 튕기기<br>시뮬레이터</div>
+        <a href="./Projects/Minac.html" target="_blank" class="link">Minac</a>
+        <div class="aText">2025년 10월 27일</div>
+      </section>
+      <section class="aSection">
+        <div class="aText">유니티 구를 위한<br>이미지 변환기</div>
+        <a href="./Projects/UnitySphere.html" target="_blank" class="link">UnitySphere</a>
+        <div class="aText">2025년 11월 16일</div>
+      </section>
+      <section class="aSection">
+        <div class="aText">자바스크립트 정렬에<br>주기 함수 적용 실험</div>
+        <a href="./Projects/ModSort.html" target="_blank" class="link">ModSort</a>
+        <div class="aText">2026년 2월 26일</div>
+      </section>
+    </main>
+    <h4>주의</h4>
+    <h6>UI/UX가 구현되지 않아 코드 내 상수 조작 등 방식으로 사용해야 하는 웹이 존재합니다</h6>
+    <h6>gravity / Minac / UnitySphere / ModSort</h6>
+    <h6>공개를 위해 사진이 교체된 웹이 존재합니다</h6>
+    <h6>JongGang</h6>
+  </body>
+</html>

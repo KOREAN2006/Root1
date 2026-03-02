@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="author" content="ClockFire">
+    <meta name="keywords" content="ClockFire, JongGang">
+    <meta name="description" content="설명할 게 없는데">
+    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <title>JongGang</title>
+    <style>
+      body{
+        margin: 0px;
+        background-color: #000;
+      }
+      #wall{
+        background: linear-gradient( 0deg, #303, #000, #003 );
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 1200px;
+        height: 600px;
+        border: 2px solid #FFF;
+      }
+      #GyoSuNim{
+        background-image: url("https://yt3.ggpht.com/q4eIf0f_MK_BcRZBTXX5nHqVe7BQ9qAnIAvA7MfGmN2lMZQMUODgc53mHbaDaeqe22a8EzSYEQ=s100-c-k-c0x00ffffff-no-rj");
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        position: absolute;
+        top: 250px;
+        left: 550px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wall">
+      <div id="GyoSuNim"></div>
+    </div>
+    <script>
+      const keyState = {
+        w: false,
+        a: false,
+        s: false,
+        d: false
+      }; //여기에 키를 써야 allowedKeys에 반영됩니다
+      const allowedKeys = Object.keys(keyState);
+      const GyoSuNim = {
+        dom: document.querySelector("#GyoSuNim"),
+        position: { x: 550, y: 250 },
+        speed: { x: 0, y: 0 }
+      };
+      addEventListener('keydown', k => {
+        if(allowedKeys.includes(k.key)){
+          keyState[k.key] = true;
+        };
+      });
+      addEventListener('keyup', k => {
+        if(allowedKeys.includes(k.key)){
+          keyState[k.key] = false;
+        };
+      });
+
+      const wall = {
+        dom: document.querySelector("#wall"),
+        deg: 0
+      };
+
+      const keyControl = function(acceleration){
+        if(keyState.w){
+          GyoSuNim.speed.y -= acceleration;
+        };
+        if(keyState.a){
+          GyoSuNim.speed.x -= acceleration;
+        };
+        if(keyState.s){
+          GyoSuNim.speed.y += acceleration;
+        };
+        if(keyState.d){
+          GyoSuNim.speed.x += acceleration;
+        };
+      };
+      const calcPosition = function(){
+        GyoSuNim.position.y += GyoSuNim.speed.y;
+        GyoSuNim.position.x += GyoSuNim.speed.x;
+        if( GyoSuNim.position.y <= 0 ){
+          GyoSuNim.speed.y *= -1;
+          const overUp = -GyoSuNim.position.y;
+          GyoSuNim.position.y += 2 * overUp;
+        }else if( GyoSuNim.position.y >= 600-100 ){
+          GyoSuNim.speed.y *= -1;
+          const overDown = 600-100-GyoSuNim.position.y;
+          GyoSuNim.position.y += 2 * overDown;
+        }; //상벽이나 하벽에 도달한 경우 튕기기
+        if( GyoSuNim.position.x <= 0 ){
+          GyoSuNim.speed.x *= -1;
+          const overLeft = -GyoSuNim.position.x;
+          GyoSuNim.position.x += 2 * overLeft;
+        }else if( GyoSuNim.position.x >= 1200-100 ){
+          GyoSuNim.speed.x *= -1;
+          const overRight = 1200-100-GyoSuNim.position.x;
+          GyoSuNim.position.x += 2 * overRight;
+        }; //좌벽이나 우벽에 도달한 경우 튕기기
+      };
+      const calcDOM = function(){
+        GyoSuNim.dom.style.top = `${GyoSuNim.position.y}px`;
+        GyoSuNim.dom.style.left = `${GyoSuNim.position.x}px`;
+      };
+      const wallColor = function(rotateSpeed){
+        wall.deg = ( wall.deg + rotateSpeed ) % 360;
+        wall.dom.style.background = `linear-gradient( ${wall.deg}deg, #303, #000, #003 )`;
+      };
+      const main = function(){
+        keyControl(0.1); //한 프레임에 변경할 속도
+        calcPosition();
+        calcDOM();
+        wallColor(1); //한 프레임에 변경할 각도
+      };
+      setInterval( main, 20 );
+    </script>
+  </body>
+</html>

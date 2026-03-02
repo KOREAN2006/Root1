@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ModSort</title>
+    <style>
+      body{
+        display: flex;
+        flex-direction: column;
+      }
+      #canvas{
+        margin: 4px;
+        border: 2px #000 solid;
+        width: 80vh;
+        height: 80vh;
+        margin: 0px auto;
+      }
+      #max{
+        font-size: 64px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <span id="max">ModSort</span>
+    <script>
+      const rkCode = { k: 1, r: -1 };
+      const rolling = "rk";
+      const color = "#FF0000";
+
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const max = document.getElementById('max');
+
+      const draw = function(length){
+        canvas.width = length;
+        canvas.height = length;
+        const arr = [];
+        for( let a = 1; a <= length; a += 1 ){
+          arr.push(a);
+        };
+        let b = 0;
+        const ModSort = arr.toSorted( () => rkCode[rolling[(b++)%rolling.length]] );
+        ctx.fillStyle = color;
+        for( const bar in ModSort ){
+          ctx.fillRect( 0, bar, ModSort[bar], 1 );
+        };
+      };
+
+      let i = 0;
+      addEventListener('keydown', k => {
+        if( k.keyCode === 39 ){
+          draw(++i);
+        }else if( k.keyCode === 37 && i > 1 ){
+          draw(--i);
+        }else{
+          return "what";
+        };
+        max.innerHTML = `<< ${i} >>`;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="author" content="ClockFire">
+    <meta name="keywords" content="ClockFire, MOTIV">
+    <meta name="description" content="설명할 게 없는데">
+    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <title>Offon</title>
+    <style>
+      body{
+        background-color: black;
+      }
+
+      .box{
+        display: flex;
+        justify-content: center;
+      }
+      .sideBox{
+        padding: 7px;
+        border: 3px solid #FFF;
+        background-color: #222;
+      }
+      #btnBox{
+        margin: 20px 30px 0px;
+      }
+      .apple{
+        width: 50px;
+        height: 50px;
+        border: 2px solid #000;
+        border-radius: 50%;
+        background-color: #222;
+      }
+      .btn{
+        font-size: 12px;
+        margin: 10px 20px;
+      }
+
+      #mainImg{
+        width: 720px;
+        height: 405px;
+        background-image: url("./Img/BGstart.png");
+        background-size: 720px 405px;
+      }
+      .gateBox{
+        position: relative;
+      }
+      .gate{
+        width: 50px;
+        height: 50px;
+        color: #FFF;
+        font-size: 16px;
+        border: 2px solid #FFF;
+        background-color: #222;
+      }
+
+      #bulbBox{
+        margin: 0px 30px 20px;
+      }
+      .bulb{
+        margin: 10px 65px;
+      }
+
+      .barUI{
+        color: #FFF;
+        font-size: 24px;
+        height: 50px;
+        border: #FFF solid 3px;
+        margin: 0px 20px;
+        background-color: #000;
+      }
+      .textUI{
+        width: 300px;
+        border-radius: 10px;
+      }
+      .btnC{
+        width: 200px;
+        border-radius: 2763px; /* 숫자가 좀 이상하긴 한데 문제는 없으니까 */
+      }
+      .btnC:hover{
+        color: #FF0;
+        border-color: #FF0;
+      }
+      .btnC:active{
+        color: #F00;
+        border-color: #F00;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box sideBox" id="btnBox">
+      <button class="apple btn" id="btn1" onclick="Offon(1)">btn1</button>
+      <button class="apple btn" id="btn2" onclick="Offon(2)">btn2</button>
+      <button class="apple btn" id="btn3" onclick="Offon(3)">btn3</button>
+      <button class="apple btn" id="btn4" onclick="Offon(4)">btn4</button>
+      <button class="apple btn" id="btn5" onclick="Offon(5)">btn5</button>
+      <button class="apple btn" id="btn6" onclick="Offon(6)">btn6</button>
+      <button class="apple btn" id="btn7" onclick="Offon(7)">btn7</button>
+      <button class="apple btn" id="btn8" onclick="Offon(8)">btn8</button>
+    </div>
+    <div class="box">
+      <div id="mainImg"></div>
+    </div>
+    <div class="box sideBox" id="bulbBox">
+      <div class="apple bulb" id="bulb1"></div>
+      <div class="apple bulb" id="bulb2"></div>
+      <div class="apple bulb" id="bulb3"></div>
+      <div class="apple bulb" id="bulb4"></div>
+    </div>
+    <div class="box">
+      <button class="barUI textUI" id="levelUI">MOTIV apple</button>
+      <button class="barUI btnC" id="btnCalc" onclick="Calc()">Calc</button>
+      <button class="barUI btnC" id="btnCheck" onclick="Check()">Check</button>
+      <button class="barUI textUI" id="infoUI">0 Calc - 0 Wrong</button>
+    </div>
+    <script>
+      let btnArray = [
+        [document.querySelector("#btn1"),false],
+        [document.querySelector("#btn2"),false],
+        [document.querySelector("#btn3"),false],
+        [document.querySelector("#btn4"),false],
+        [document.querySelector("#btn5"),false],
+        [document.querySelector("#btn6"),false],
+        [document.querySelector("#btn7"),false],
+        [document.querySelector("#btn8"),false]
+      ]; //이거 어레이로 묶으니까 관리가 편하네
+      let gateArray = []; //개수가 다른 레벨이 있어서 Batch에서 추가
+      let bulbArray = [
+        document.querySelector("#bulb1"),
+        document.querySelector("#bulb2"),
+        document.querySelector("#bulb3"),
+        document.querySelector("#bulb4")
+      ]; //관리 편하게 재사용
+
+      const levelData = [
+        {
+          f: function(e){
+            return [ false, false, false, false ]; /* off off off off */
+          }, //계산
+          ans: [ 1 ], //채점 시 사용되는 실제 게이트 조합
+          gateXY: [
+            { x: 335, y: 150 }
+          ], //게이트 좌표
+          chooseGate: [ '?', 'start' ], //사용할 수 있는 게이트 종류
+          BG: "BGstart" //사실 이거 안 쓰임
+        }, //이건 레벨이 아니라 시작 전용 화면
+        {
+          f: function(e){
+            e[1-1] = e[1-1] | e[4-1]; /* L1 = L1 or L4 */
+            e[1-1] = e[1-1] & e[7-1]; /* L1 = L1 and L7 */
+            return [ false, false, e[1-1], false ]; /* off off L1 off */
+          }, //계산
+          ans: [ 2, 1 ], //채점 시 사용되는 실제 게이트 조합
+          gateXY: [
+            { x: 250, y: 80 },
+            { x: 425, y: 190-50 }
+          ], //게이트 좌표
+          chooseGate: [ '?', 'and', 'or' ], //사용할 수 있는 게이트 종류
+          BG: "BG1"
+        }, //완성된 레벨
+        {
+          f: function(e){
+            e[1-1] = e[1-1] ^ e[4-1]; /* L1 = L1 xor L4 */
+            e[1-1] = e[1-1] ^ e[7-1]; /* L1 = L1 xor L7 */
+            return [ false, false, e[1-1], false ]; /* off off L1 off */
+          }, //계산
+          ans: [ 3, 3 ], //채점 시 사용되는 실제 게이트 조합
+          gateXY: [
+            { x: 250, y: 80 },
+            { x: 425, y: 190-50 }
+          ], //게이트 좌표
+          chooseGate: [ '?', 'and', 'or', 'xor' ], //사용할 수 있는 게이트 종류
+          BG: "BG1"
+        }, //완성된 레벨
+        {
+          f: function(e){
+            e[2-1] = e[2-1] & e[3-1]; /* L2 = L2 and L7 */
+            e[6-1] = e[6-1] | e[7-1]; /* L6 = L6 or L7 */
+            e[2-1] = e[2-1] & e[6-1]; /* L2 = L2 and L6 */
+            return [ false, false, e[2-1], false ]; /* off off L2 off */
+          }, //계산
+          ans: [ 1, 2, 1 ], //채점 시 사용되는 실제 게이트 조합
+          gateXY: [
+            { x: 160, y: 80 },
+            { x: 510, y: 80-50 },
+            { x: 425, y: 190-100 }
+          ], //게이트 좌표
+          chooseGate: [ '?', 'and', 'or' ], //사용할 수 있는 게이트 종류
+          BG: "BG2"
+        }, //완성된 레벨
+        {
+          f: function(e){
+            e[2-1] = e[2-1] | e[3-1]; /* L2 = L2 or L7 */
+            e[6-1] = e[6-1] | e[7-1]; /* L6 = L6 or L7 */
+            e[2-1] = e[2-1] ^ e[6-1]; /* L2 = L2 xor L6 */
+            return [ false, false, e[2-1], false ]; /* off off L2 off */
+          }, //계산
+          ans: [ 2, 2, 3 ], //채점 시 사용되는 실제 게이트 조합
+          gateXY: [
+            { x: 160, y: 80 },
+            { x: 510, y: 80-50 },
+            { x: 425, y: 190-100 }
+          ], //게이트 좌표
+          chooseGate: [ '?', 'and', 'or', 'xor' ], //사용할 수 있는 게이트 종류
+          BG: "BG2"
+        }, //완성된 레벨
+        {
+          f: function(e){
+            e[2-1] = e[2-1] ^ e[3-1]; /* L2 = L2 xor L7 */
+            e[6-1] = e[6-1] & e[7-1]; /* L6 = L6 and L7 */
+            e[2-1] = e[2-1] | e[6-1]; /* L2 = L2 or L6 */
+            return [ false, false, e[2-1], false ]; /* off off L2 off */
+          }, //계산
+          ans: [ 3, 1, 2 ], //채점 시 사용되는 실제 게이트 조합
+          gateXY: [
+            { x: 160, y: 80 },
+            { x: 510, y: 80-50 },
+            { x: 425, y: 190-100 }
+          ], //게이트 좌표
+          chooseGate: [ '?', 'and', 'or', 'xor' ], //사용할 수 있는 게이트 종류
+          BG: "BG2"
+        } //완성된 레벨
+      ]; //레벨 정보
+
+      const Batch = function(e){
+        let i = 1; //게이트 구분하는 숫자 설정
+        for(const XY of e){
+          const gateBox = document.createElement("div");
+          gateBox.innerHTML = `
+            <button class="gate" id="gate${i}" onclick="Choose(${i})">?</button>
+          `;
+          gateBox.classList.add('gateBox');
+          mainImg.appendChild(gateBox); //화면에 표시
+          const gate = document.querySelector(`#gate${i}`);
+          gateArray.push([ gateBox, gate, 0 ]); //btnArray 비슷한 형식으로 추가
+          gateArray[i-1][0].style.top = `${XY.y}px`;
+          gateArray[i-1][0].style.left = `${XY.x}px`;
+          i += 1;
+        };
+        return 2763; //엔더 반환값
+      }; //게이트 배치(Batch)하는 함수
+      const mainImg = document.querySelector("#mainImg");
+      const btnCalc = document.querySelector("#btnCalc");
+      const levelUI = document.querySelector("#levelUI");
+      const infoUI = document.querySelector("#infoUI");
+      let nowLevel = 0; //현재 레벨을 보여주는 부분
+      let CalcClick = 0;
+      let WrongClick = 0;
+
+      const Offon = function(n){
+        if(btnArray[n-1][1] === false){
+          btnArray[n-1][0].style.borderColor = '#F00';
+          btnArray[n-1][0].style.color = '#F00';
+          btnArray[n-1][1] = true;
+        }else{
+          btnArray[n-1][0].style.borderColor = '#000';
+          btnArray[n-1][0].style.color = '#000';
+          btnArray[n-1][1] = false;
+        }; //플립플롭
+        return 2763; //엔더 반환값
+      }; //버튼 상태 바꾸는 함수
+
+      const Calc = function(){
+        CalcClick += 1;
+        infoUI.innerHTML = `${CalcClick} Calc - ${WrongClick} Wrong`;
+        let btnValueArray = [];
+        for(const btn of btnArray){
+          btnValueArray.push(btn[1]);
+        }; //불리언만 정리된 어레이
+        const bulbValueArray = levelData[nowLevel].f(btnValueArray); //결과 계산
+        for( let i = 0; i <= 3; i += 1 ){
+          if(bulbValueArray[i]){
+            bulbArray[i].style.borderColor = '#F00';
+          }else{
+            bulbArray[i].style.borderColor = '#000';
+          };
+        }; //결과 반영
+        return 2763; //엔더 반환값
+      }; //전구로 결과 보여주는 함수
+
+      const Choose = function(n){
+        gateArray[n-1][2] = (gateArray[n-1][2]+1)%levelData[nowLevel].chooseGate.length; //다음 숫자로 바꾸는 코드
+        gateArray[n-1][1].innerHTML = levelData[nowLevel].chooseGate[gateArray[n-1][2]]; //적용
+        return 2763; //엔더 반환값
+      }; //게이트 바꾸는 함순데 자연적 난독화 레전드
+
+      const Check = function(){
+        for( let i = 0; i < levelData[nowLevel].ans.length; i += 1 ){
+          if(levelData[nowLevel].ans[i] !== gateArray[i][2]){
+            WrongClick += 1;
+            infoUI.innerHTML = `${CalcClick} Calc - ${WrongClick} Wrong`;
+            return 2763; //엔더 반환값
+          };
+        };
+        for( i = 1; i <= levelData[nowLevel].gateXY.length; i += 1 ){
+          document.querySelector(".gateBox").remove();
+        };
+        gateArray = [] //gateArray 초기화
+        for( let i = 0; i <= 7; i += 1 ){
+          btnArray[i][0].style.borderColor = '#000';
+          btnArray[i][0].style.color = '#000';
+          btnArray[i][1] = false;
+        }; //버튼 초기화
+        for( let i = 0; i <= 3; i += 1 ){
+          bulbArray[i].style.borderColor = '#000';
+        }; //전구 초기화
+        nowLevel += 1;
+        levelUI.innerHTML = `Level ${nowLevel}`;
+        Batch(levelData[nowLevel].gateXY);
+        mainImg.style.backgroundImage = `url("./Img/${levelData[nowLevel].BG}.png")`;
+        return 2763; //엔더 반환값
+      };
+
+      Batch(levelData[nowLevel].gateXY); //레벨 스타터
+    </script>
+  </body>
+</html>

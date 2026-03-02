@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <title>UnitySphere</title>
+    <style>
+      *{
+        color: #FFF;
+      }
+      body{
+        margin: 20px;
+        background-color: #111;
+      }
+      .canvas{
+        margin: 4px;
+        border: 2px #FFF solid;
+      }
+      #downloadBtn{
+        color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>1 - 이미지 불러오기</h2>
+    <input type="file" id="input" accept="image/*">
+    <h2>2 - 캔버스 작업 영역</h2>
+    <canvas class="canvas" id="inputCanvas"></canvas>
+    <canvas class="canvas" id="outputCanvas"></canvas>
+    <h2>3 - 이미지 내보내기</h2>
+    <button id="downloadBtn" disabled>처리된 PNG 다운로드</button>
+    <script>
+      const input = document.getElementById('input');
+      const inputCanvas = document.getElementById('inputCanvas');
+      const outputCanvas = document.getElementById('outputCanvas');
+      const inputImage = inputCanvas.getContext('2d');
+      const outputImage = outputCanvas.getContext('2d');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      input.addEventListener('change', userInput => {
+        const file = userInput.target.files[0];
+        if(!file){ return; };
+
+        const reader = new FileReader();
+        reader.onload = readerEvent => {
+          const canvasPaper = new Image(); //HTML Image 객체 생성
+
+          canvasPaper.onload = () => {
+            let radius = -1;
+            if( canvasPaper.width === canvasPaper.height ){
+              radius = canvasPaper.width / 2;
+            }else{ return; };
+
+            const quarterSize = 512; /* 이용자조절값 */
+
+            const size = quarterSize * 4;
+            inputCanvas.width = canvasPaper.width;
+            inputCanvas.height = canvasPaper.height;
+            outputCanvas.width = size * 2;
+            outputCanvas.height = size;
+
+            inputImage.drawImage( canvasPaper, 0, 0 );
+            downloadBtn.disabled = false; //이미지 로드 완료 후 다운로드 버튼 활성화
+
+            const inputCanvasImageData = inputImage.getImageData( 0, 0, inputCanvas.width, inputCanvas.height );
+            let outputCanvasImageData = outputImage.getImageData( 0, 0, outputCanvas.width, outputCanvas.height );
+
+            for( let i = 0; i < quarterSize; i += 1 ){
+              for( let j = 0; j < outputCanvas.width; j += 1 ){
+                const usingPixelNumber = ( outputCanvas.width * i + ( outputCanvas.width - j - 1 ) ) * 4;
+                const sharpPosition = {
+                  seta: 2 * Math.PI * ( j + 0.5 ) / outputCanvas.width,
+                  r: radius * ( i + 0.5 ) / quarterSize
+                };
+                const inCirclePosition = {
+                  x: Math.floor( Math.cos(sharpPosition.seta) * sharpPosition.r + radius ),
+                  y: Math.floor( Math.sin(sharpPosition.seta) * sharpPosition.r + radius )
+                };
+                const inCirclePixelNumber = ( inputCanvas.width * inCirclePosition.y + inCirclePosition.x ) * 4;
+                for( let k = 0; k < 4; k += 1 ){
+                  outputCanvasImageData.data[usingPixelNumber + k] = inputCanvasImageData.data[inCirclePixelNumber + k];
+                };
+              };
+            };
+
+            const PixelsInImage = outputCanvas.width * outputCanvas.height;
+            for( let i = 0; i < quarterSize; i += 1 ){
+              for( let j = 0; j < outputCanvas.width; j += 1 ){
+                const pixelNumber = ( outputCanvas.width * i + ( outputCanvas.width - j - 1 ) ) * 4;
+                for( let k = 0; k < 4; k += 1 ){
+                  outputCanvasImageData.data[(PixelsInImage - 1) * 4 - pixelNumber + k] = outputCanvasImageData.data[pixelNumber + k];
+                };
+              };
+            };
+            outputImage.putImageData( outputCanvasImageData, 0, 0 );
+
+            outputImage.fillStyle = '#FFFFFF'; /* 이용자조절값 */
+            outputImage.fillRect( 0, quarterSize, outputCanvas.width, quarterSize * 2 );
+
+            outputImage.font = `${quarterSize}px Arial`; /* 이용자조절값 */
+            outputImage.fillStyle = '#000000'; /* 이용자조절값 */
+            const innerText = '12345'; /* 이용자조절값 */
+
+            outputImage.textAlign = 'center';
+            outputImage.textBaseline = 'middle';
+            outputImage.fillText( innerText, outputCanvas.width / 4, outputCanvas.height / 2 );
+            outputImage.fillText( innerText, outputCanvas.width * 3 / 4, outputCanvas.height / 2 );
+          };
+
+          canvasPaper.src = readerEvent.target.result; //Data URL을 이미지 소스로 설정
+        };
+        reader.readAsDataURL(file); //파일을 Base64 Data URL 형식으로 읽기 시작
+      }); //변화가 감지된 경우 실행
+
+      downloadBtn.addEventListener('click', () => {
+        const dataURL = outputCanvas.toDataURL('image/png');
+
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'processed_image.png';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    </script>
+  </body>
+</html>

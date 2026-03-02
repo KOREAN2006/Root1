@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>gravity</title>
+    <style>
+      body{
+        margin: 0px;
+        background-color: #333;
+      }
+
+      .planet{
+        position: absolute;
+        border-radius: 50%;
+        background-size: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="planet" id="planet1"></div>
+    <div class="planet" id="planet2"></div>
+    <div class="planet" id="planet3"></div>
+    <script>
+      const pr = function(v){
+        console.log(v);
+      }; //편의성 패치
+      let planetArray = [
+        {
+          planet: document.querySelector("#planet1"),
+          position: { x: 500-50, y: 300-50 },
+          speed: { x: 0, y: 0 },
+          size: 100,
+          zIndex: 3,
+          name: 'ClockFire',
+          background: 'https://yt3.ggpht.com/yFfQQ4Jt6UNCunKqZuC3kaEbZ_dbnuit93yL-uPt1GUsaGax3YsLKd8_TEhG9ImzmoNFTiu1Yho=s240-c-k-c0x00ffffff-no-rj'
+        },
+        {
+          planet: document.querySelector("#planet2"),
+          position: { x: 400-10, y: 300-10 },
+          speed: { x: 0, y: 3 },
+          size:  20,
+          zIndex: 1,
+          name: '팜나무',
+          background: 'https://yt3.ggpht.com/2p4xcNrd2U8-6mo1q33m9w6eRbrxEQsfaVfckSbC0KhR3LZOvl3tdzT-EP7eoKffwEEbf-2bOQ=s240-c-k-c0x00ffffff-no-rj'
+        },
+        {
+          planet: document.querySelector("#planet3"),
+          position: { x: 500-15, y: 100-15 },
+          speed: { x: 3, y: 1 },
+          size: 30,
+          zIndex: 2,
+          name: 'BMI KINGDOM',
+          background: 'https://yt3.ggpht.com/4TTwDarNZfUT2kkr7bETGdfgoBbqfovW4SP5lASi2PCcgkihz3Sfi5Q9Vn4Z_XNdv8O_MnXMdA=s240-c-k-c0x00ffffff-no-rj'
+        }
+      ]; //시작되는 순간의 설정
+
+      /* 물리 계산용 함수 */
+      const coreCoor = function(p){
+        return { x: p.position.x + (p.size/2), y: p.position.y + (p.size/2) };
+      }; //좌표 정보를 행성 중심 위치를 변환하여 반환 coreCoordinate
+      const distanceSquare = function( p1, p2 ){
+        return (coreCoor(p1).x-coreCoor(p2).x)**2 + (coreCoor(p1).y-coreCoor(p2).y)**2;
+      }; //두 행성 중심 거리의 제곱을 반환
+      const distance = function( p1, p2 ){
+        return distanceSquare( p1, p2 )**0.5;
+      }; //두 행성 중심 거리를 반환
+      const mass = function(p){
+        return p.size**3;
+      }; //행성의 크기에 의해 결정되는 질량을 반환
+      const gravity = function( p1, p2 ){
+        return (mass(p1)*mass(p2))/distanceSquare( p1, p2 );
+      }; //두 행성의 질량에 따른 중력을 반환
+      const angle = function( p1, p2 ){
+        return Math.atan2( coreCoor(p2).y-coreCoor(p1).y, coreCoor(p2).x-coreCoor(p1).x );
+      }; //시계 방향으로 회전하는 세타 반환
+
+      /* 행성 만드는 함수 */
+      const planetMaker = function(p){
+        p.planet.style.left = `${p.position.x}px`;
+        p.planet.style.top = `${p.position.y}px`;
+        p.planet.style.width = `${p.size}px`;
+        p.planet.style.height = `${p.size}px`;
+        p.planet.style.zIndex = p.zIndex;
+        p.planet.style.backgroundImage = `url('${p.background}')`;
+      };
+      for(const p of planetArray){
+        planetMaker(p);
+      }; //처음에 행성을 만드는 역할
+      const frameFunction = function(a){
+        for(const p1 of planetArray){
+          let xPower = 0;
+          let yPower = 0;
+          for(const p2 of planetArray){
+            if( p1.planet !== p2.planet ){
+              const vectorSize = gravity( p1, p2 ) * mass(p2)/(mass(p1)+mass(p2));
+              const vectorAngle = angle( p1, p2 );
+              xPower += Math.cos(vectorAngle)*vectorSize;
+              yPower += Math.sin(vectorAngle)*vectorSize;
+            }; //자기 자신과의 연산을 방지하기 위함
+          }; //가속도 각각 계산
+          p1.speed.x += xPower/a; //구한 가속도를 속도에 반영
+          p1.speed.y += yPower/a;
+        };
+        for(const p1 of planetArray){
+          p1.position.x += p1.speed.x; //속도를 위치에 반영
+          p1.position.y += p1.speed.y;
+          p1.planet.style.left = `${p1.position.x}px`;
+          p1.planet.style.top = `${p1.position.y}px`;
+          /* pr(`이름 ${p1.name}\n우속 ${p1.speed.x}\n하속 ${p1.speed.y}`); */
+        };
+      }; //매 프레임마다 각 행성의 위치를 새롭게 지정
+
+      setInterval( frameFunction, 20, 10000000 );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h3>입력받은 문자열을 각 단어로 쪼개기</h3>
+    <p>
+      import fs = require('fs');<br>
+      const inputString = fs.readFileSync('/dev/stdin').toString();<br>
+      const inputLineArray = inputString.split('\n');<br>
+      let input = [];<br>
+      for(const inputLine of inputLineArray){<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;const wordArray = inputLine.split(' ');<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;input.push(wordArray);<br>
+      };
+    </p>
+    <h3>입력받은 문자열을 각 숫자로 쪼개기</h3>
+    <p>
+      import fs = require('fs');<br>
+      const inputString = fs.readFileSync('/dev/stdin').toString();<br>
+      const inputLineArray = inputString.split('\n');<br>
+      let input = [];<br>
+      for(const inputLine of inputLineArray){<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;const wordArray = inputLine.split(' ');<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;let numberArray = [];<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;for(const word of wordArray){<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numberArray.push(Number(word));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;};<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;input.push(numberArray);<br>
+      };
+    </p>
+    <h3>문자를 숫자로 변환하기</h3>
+    <p>
+      const Puffball = Number(input[0][0]);
+    </p>
+    <h3>연산 관련</h3>
+    <p>
+      console.log( a + b );<br>
+      console.log( a - b );<br>
+      console.log( a * b );<br>
+      console.log( a / b );<br>
+      console.log(Math.floor( a / b ));<br>
+      console.log( a % b );
+    </p>
+    <h3>횟수 반복문</h3>
+    <p>
+      for(let i = 1; i <= 10; i += 1){<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;console.log(`${i}번째 출력`);<br>
+      };
+    </p>
+    <h3>조건 반복문</h3>
+    <p>
+      while(true){<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;console.log('조건이 참');<br>
+      };
+    </p>
+    <script>
+      const input = [];
+    </script>
+  </body>
+</html>
